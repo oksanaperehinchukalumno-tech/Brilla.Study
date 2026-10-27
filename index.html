@@ -1,0 +1,512 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrillaStudy ✦</title>
+<style>
+:root {
+  --lila: #8b70d6;
+  --lila-claro: #f0eaff;
+  --verde: #dff4e5;
+  --fondo: #faf9ff;
+  --texto: #29253b;
+  --borde: #e9e4f3;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+}
+button, input, textarea { font: inherit; }
+button { cursor: pointer; }
+.app { min-height: 100vh; display: flex; }
+.sidebar {
+  width: 245px;
+  padding: 22px 15px;
+  background: white;
+  border-right: 1px solid var(--borde);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.logo { font-size: 23px; font-weight: 850; padding: 8px; }
+.logo span { color: var(--lila); }
+.nav {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 12px;
+  border-radius: 13px;
+  text-align: left;
+  color: #625c72;
+}
+.nav:hover, .nav.active { background: var(--lila-claro); color: #6549b4; }
+.small { color: #898396; font-size: 12px; }
+.main { flex: 1; min-width: 0; }
+.topbar {
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+  background: rgba(255,255,255,.8);
+  border-bottom: 1px solid var(--borde);
+}
+.pill {
+  background: var(--verde);
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.content { max-width: 920px; margin: auto; padding: 30px 24px; }
+h1 { font-size: clamp(25px,4vw,34px); margin: 0 0 8px; }
+.subtitle { color: #797387; line-height: 1.6; }
+.panel {
+  background: white;
+  border: 1px solid var(--borde);
+  border-radius: 20px;
+  padding: 20px;
+  margin-top: 22px;
+  box-shadow: 0 5px 20px #30204d08;
+}
+.chat {
+  height: min(43vh,390px);
+  min-height: 230px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 8px 2px;
+}
+.msg {
+  max-width: 88%;
+  padding: 13px 15px;
+  border-radius: 16px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.bot { background: #f5f2fc; align-self: flex-start; }
+.user { background: var(--lila-claro); align-self: flex-end; }
+.composer { border: 1px solid var(--borde); border-radius: 17px; padding: 10px; }
+.composer textarea {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  resize: vertical;
+  min-height: 65px;
+  background: transparent;
+}
+.composer-bottom { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.btn {
+  border: 0;
+  background: var(--lila);
+  color: white;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-weight: 650;
+}
+.btn.secondary { background: var(--lila-claro); color: #6549b4; }
+.btn.green { background: #dff4e5; color: #276440; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.preview { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+.preview img { width: 90px; height: 90px; object-fit: cover; border-radius: 10px; }
+.grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 15px; }
+.stat { background: white; border: 1px solid var(--borde); padding: 17px; border-radius: 17px; }
+.stat strong { display: block; font-size: 25px; margin-top: 9px; }
+input[type=text], input[type=number], .task-input {
+  border: 1px solid var(--borde);
+  border-radius: 11px;
+  padding: 12px;
+  width: 100%;
+  background: white;
+  color: var(--texto);
+}
+.task-row { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid var(--borde); }
+.task-row:last-child { border-bottom:0; }
+.task-row.done span { text-decoration:line-through; color:#918a9c; }
+.task-row span { flex:1; overflow-wrap:anywhere; }
+.delete { border:0; background:transparent; color:#a29aad; font-size:18px; }
+.hidden { display:none !important; }
+.flashcard {
+  min-height: 170px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:25px;
+  background:var(--lila-claro);
+  border-radius:18px;
+  font-size:20px;
+  cursor:pointer;
+}
+footer { text-align:center; padding:25px; font-size:12px; color:#928b9e; }
+@media(max-width:700px) {
+  .app { display:block; }
+  .sidebar { width:100%; padding:10px; border-right:0; border-bottom:1px solid var(--borde); }
+  .logo { padding:5px; font-size:21px; }
+  .navs { display:flex; gap:5px; overflow-x:auto; }
+  .nav { white-space:nowrap; width:auto; padding:10px; font-size:13px; }
+  .sidebar .small { display:none; }
+  .topbar { padding:0 15px; height:55px; }
+  .content { padding:22px 14px; }
+  .grid { grid-template-columns:1fr; }
+  .panel { padding:14px; }
+  .chat { height:38vh; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">✦ Brilla<span>Study</span></div>
+    <div class="small">TU ESPACIO DE ESTUDIO</div>
+    <div class="navs">
+      <button class="nav active" data-page="chat">✧ Mi tutor IA</button>
+      <button class="nav" data-page="tasks">☑ Mis deberes</button>
+      <button class="nav" data-page="cards">▤ Tarjetas</button>
+      <button class="nav" data-page="timer">◷ Temporizador</button>
+      <button class="nav" data-page="progress">✦ Mi progreso</button>
+    </div>
+    <div class="small" style="margin-top:auto">Hecho para aprender a tu ritmo 💜</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <strong id="page-title">Mi tutor de estudio</strong>
+      <span class="pill">✦ 3.º ESO</span>
+    </header>
+
+    <section class="content" id="page-chat">
+      <h1>¡Vamos a brillar! ✨</h1>
+      <p class="subtitle">¿Qué necesitas estudiar hoy? Pregunta, escribe un ejercicio o adjunta una foto.</p>
+      <div class="panel">
+        <div class="chat" id="chat">
+          <div class="msg bot">¡Hola! ✨ Soy tu espacio de estudio BrillaStudy.
+
+Puedes escribir una pregunta o adjuntar una foto de tus deberes. Cuando conectemos el servidor de IA, podré analizar los ejercicios y explicártelos paso a paso.
+
+¿Con qué asignatura empezamos?</div>
+        </div>
+        <div class="preview" id="preview"></div>
+        <div class="composer">
+          <textarea id="question" placeholder="Escribe tu pregunta aquí..."></textarea>
+          <div class="composer-bottom">
+            <div>
+              <input id="photos" type="file" accept="image/*" multiple hidden>
+              <button class="btn secondary" id="attach">＋ Foto</button>
+              <span class="small" id="file-label">Adjuntar ejercicio</span>
+            </div>
+            <button class="btn" id="send">Enviar ↑</button>
+          </div>
+        </div>
+        <p class="small" id="chat-status">IA no conectada: las respuestas automáticas requieren configurar el servidor.</p>
+      </div>
+    </section>
+
+    <section class="content hidden" id="page-tasks">
+      <h1>Mis deberes ☑</h1>
+      <p class="subtitle">Organiza tus tareas y marca las que termines.</p>
+      <div class="panel">
+        <form id="task-form" style="display:flex;gap:8px">
+          <input class="task-input" id="task-input" type="text" placeholder="Ej. Estudiar Biología" required>
+          <button class="btn">Añadir</button>
+        </form>
+        <div id="task-list"></div>
+      </div>
+    </section>
+
+    <section class="content hidden" id="page-cards">
+      <h1>Tarjetas de memoria ▤</h1>
+      <p class="subtitle">Crea preguntas para repasar. Pulsa la tarjeta para ver la respuesta.</p>
+      <div class="panel">
+        <form id="card-form" style="display:grid;gap:10px">
+          <input id="front" type="text" placeholder="Pregunta" required>
+          <input id="back" type="text" placeholder="Respuesta" required>
+          <button class="btn">Crear tarjeta</button>
+        </form>
+      </div>
+      <div class="panel">
+        <div class="flashcard" id="flashcard">Aún no tienes tarjetas. ¡Crea la primera!</div>
+        <div style="display:flex;justify-content:space-between;gap:8px;margin-top:14px">
+          <button class="btn secondary" id="prev-card">← Anterior</button>
+          <span id="card-count" class="small" style="align-self:center">0 tarjetas</span>
+          <button class="btn secondary" id="next-card">Siguiente →</button>
+        </div>
+        <button class="btn secondary" id="delete-card" style="margin-top:12px">Eliminar tarjeta actual</button>
+      </div>
+    </section>
+
+    <section class="content hidden" id="page-timer">
+      <h1>Tiempo para concentrarte ◷</h1>
+      <p class="subtitle">Estudia un rato y haz pausas para descansar.</p>
+      <div class="panel" style="text-align:center">
+        <p class="small">MINUTOS DE ESTUDIO</p>
+        <div id="clock" style="font-size:65px;font-weight:800;letter-spacing:2px">25:00</div>
+        <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:15px 0">
+          <button class="btn secondary preset" data-min="15">15 min</button>
+          <button class="btn secondary preset" data-min="25">25 min</button>
+          <button class="btn secondary preset" data-min="45">45 min</button>
+          <button class="btn secondary preset" data-min="5">Descanso 5 min</button>
+        </div>
+        <button class="btn" id="start-timer">Empezar</button>
+        <button class="btn secondary" id="reset-timer">Reiniciar</button>
+        <p id="timer-status" class="small">Preparada cuando tú quieras.</p>
+      </div>
+    </section>
+
+    <section class="content hidden" id="page-progress">
+      <h1>Tu progreso ✦</h1>
+      <p class="subtitle">Tus datos se guardan en este navegador.</p>
+      <div class="grid">
+        <div class="stat">Deberes completados<strong id="completed-stat">0</strong></div>
+        <div class="stat">Tareas pendientes<strong id="pending-stat">0</strong></div>
+        <div class="stat">Tarjetas creadas<strong id="cards-stat">0</strong></div>
+        <div class="stat">Sesiones terminadas<strong id="sessions-stat">0</strong></div>
+      </div>
+      <div class="panel">
+        <strong>Tu espacio, a tu ritmo 💚</strong>
+        <p class="subtitle">Cada tarea terminada es un paso adelante. ¡Sigue así!</p>
+      </div>
+    </section>
+    <footer>✦ BrillaStudy · Aprende a tu ritmo</footer>
+  </main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const load = (key, fallback) => {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+  catch { return fallback; }
+};
+const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+
+let tasks = load("bs_tasks", []);
+let cards = load("bs_cards", []);
+let completedSessions = load("bs_sessions", 0);
+let cardIndex = 0;
+let showingBack = false;
+let selectedFiles = [];
+
+function showPage(name) {
+  document.querySelectorAll(".content").forEach(el => el.classList.add("hidden"));
+  $("page-" + name).classList.remove("hidden");
+  document.querySelectorAll(".nav").forEach(el =>
+    el.classList.toggle("active", el.dataset.page === name)
+  );
+  const titles = {
+    chat:"Mi tutor de estudio", tasks:"Mis deberes",
+    cards:"Tarjetas de memoria", timer:"Temporizador", progress:"Mi progreso"
+  };
+  $("page-title").textContent = titles[name];
+  renderProgress();
+}
+document.querySelectorAll(".nav").forEach(btn =>
+  btn.addEventListener("click", () => showPage(btn.dataset.page))
+);
+
+function addMessage(text, who) {
+  const div = document.createElement("div");
+  div.className = "msg " + who;
+  div.textContent = text;
+  $("chat").appendChild(div);
+  $("chat").scrollTop = $("chat").scrollHeight;
+}
+
+$("attach").addEventListener("click", () => $("photos").click());
+$("photos").addEventListener("change", event => {
+  selectedFiles = Array.from(event.target.files || []).slice(0, 4);
+  $("preview").replaceChildren();
+  selectedFiles.forEach(file => {
+    if (!file.type.startsWith("image/")) return;
+    const img = document.createElement("img");
+    img.alt = file.name;
+    img.src = URL.createObjectURL(file);
+    $("preview").appendChild(img);
+  });
+  $("file-label").textContent = selectedFiles.length
+    ? selectedFiles.length + " foto(s) seleccionada(s)" : "Adjuntar ejercicio";
+});
+
+$("send").addEventListener("click", async () => {
+  const question = $("question").value.trim();
+  if (!question && !selectedFiles.length) return;
+  addMessage(question || "He adjuntado una foto de un ejercicio.", "user");
+  selectedFiles.forEach(file => addMessage("📎 " + file.name, "user"));
+  $("question").value = "";
+  $("photos").value = "";
+  $("preview").replaceChildren();
+  selectedFiles = [];
+
+  addMessage(
+    "Tu mensaje está en la conversación, pero la IA todavía no está conectada. Para recibir respuestas reales y analizar las fotos, primero debemos configurar el servidor Gemini y conectarlo a esta página.",
+    "bot"
+  );
+});
+
+function renderTasks() {
+  $("task-list").replaceChildren();
+  tasks.forEach((task, i) => {
+    const row = document.createElement("div");
+    row.className = "task-row" + (task.done ? " done" : "");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.done;
+    checkbox.addEventListener("change", () => {
+      tasks[i].done = checkbox.checked;
+      save("bs_tasks", tasks);
+      renderTasks();
+      renderProgress();
+    });
+    const label = document.createElement("span");
+    label.textContent = task.text;
+    const del = document.createElement("button");
+    del.className = "delete";
+    del.textContent = "×";
+    del.setAttribute("aria-label", "Eliminar tarea");
+    del.addEventListener("click", () => {
+      tasks.splice(i, 1);
+      save("bs_tasks", tasks);
+      renderTasks();
+      renderProgress();
+    });
+    row.append(checkbox, label, del);
+    $("task-list").appendChild(row);
+  });
+}
+$("task-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const text = $("task-input").value.trim();
+  if (!text) return;
+  tasks.push({text, done:false});
+  save("bs_tasks", tasks);
+  $("task-input").value = "";
+  renderTasks();
+  renderProgress();
+});
+
+function renderCards() {
+  if (!cards.length) {
+    $("flashcard").textContent = "Aún no tienes tarjetas. ¡Crea la primera!";
+    $("card-count").textContent = "0 tarjetas";
+    return;
+  }
+  cardIndex = (cardIndex + cards.length) % cards.length;
+  $("flashcard").textContent = showingBack
+    ? cards[cardIndex].back : cards[cardIndex].front;
+  $("card-count").textContent = (cardIndex+1) + " de " + cards.length;
+}
+$("card-form").addEventListener("submit", event => {
+  event.preventDefault();
+  cards.push({front:$("front").value.trim(), back:$("back").value.trim()});
+  save("bs_cards", cards);
+  cardIndex = cards.length - 1;
+  showingBack = false;
+  $("front").value = "";
+  $("back").value = "";
+  renderCards();
+  renderProgress();
+});
+$("flashcard").addEventListener("click", () => {
+  if (!cards.length) return;
+  showingBack = !showingBack;
+  renderCards();
+});
+$("prev-card").addEventListener("click", () => {
+  if (!cards.length) return;
+  cardIndex--;
+  showingBack = false;
+  renderCards();
+});
+$("next-card").addEventListener("click", () => {
+  if (!cards.length) return;
+  cardIndex++;
+  showingBack = false;
+  renderCards();
+});
+$("delete-card").addEventListener("click", () => {
+  if (!cards.length) return;
+  cards.splice(cardIndex, 1);
+  save("bs_cards", cards);
+  showingBack = false;
+  renderCards();
+  renderProgress();
+});
+
+let duration = 25 * 60;
+let remaining = duration;
+let timerEnd = 0;
+let timerRunning = false;
+let timerInterval = null;
+
+function renderClock() {
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  $("clock").textContent =
+    String(mins).padStart(2,"0") + ":" + String(secs).padStart(2,"0");
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  timerRunning = false;
+  $("start-timer").textContent = "Empezar";
+}
+function tick() {
+  remaining = Math.max(0, Math.ceil((timerEnd - Date.now()) / 1000));
+  renderClock();
+  if (remaining <= 0) {
+    stopTimer();
+    completedSessions++;
+    save("bs_sessions", completedSessions);
+    $("timer-status").textContent = "¡Tiempo terminado! Tómate un descanso 💚";
+    renderProgress();
+  }
+}
+$("start-timer").addEventListener("click", () => {
+  if (timerRunning) {
+    tick();
+    stopTimer();
+    $("timer-status").textContent = "Temporizador pausado.";
+    return;
+  }
+  if (remaining <= 0) remaining = duration;
+  timerEnd = Date.now() + remaining * 1000;
+  timerRunning = true;
+  $("start-timer").textContent = "Pausar";
+  $("timer-status").textContent = "¡A concentrarse!";
+  timerInterval = setInterval(tick, 250);
+});
+$("reset-timer").addEventListener("click", () => {
+  stopTimer();
+  remaining = duration;
+  renderClock();
+  $("timer-status").textContent = "Temporizador reiniciado.";
+});
+document.querySelectorAll(".preset").forEach(btn => {
+  btn.addEventListener("click", () => {
+    stopTimer();
+    duration = Number(btn.dataset.min) * 60;
+    remaining = duration;
+    renderClock();
+    $("timer-status").textContent = "Tiempo configurado.";
+  });
+});
+
+function renderProgress() {
+  $("completed-stat").textContent = tasks.filter(t => t.done).length;
+  $("pending-stat").textContent = tasks.filter(t => !t.done).length;
+  $("cards-stat").textContent = cards.length;
+  $("sessions-stat").textContent = completedSessions;
+}
+
+renderTasks();
+renderCards();
+renderClock();
+renderProgress();
+</script>
+</body>
+</html>
